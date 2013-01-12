@@ -1,5 +1,4 @@
 <?php
-    include("classes/myArrayObject.php");
     include("classes/playlist.class.php");
     include("classes/video.class.php");
     //include("classes/youtube.class.php");

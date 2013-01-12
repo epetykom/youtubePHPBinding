@@ -16,8 +16,6 @@ class youtubePlaylist
     private $last;
     
     public function __construct($xml) {
-        
-        
         $this->time         = time();
         $this->startIndex   = 1;
         $idArray            = explode("/", $xml->id);
@@ -36,20 +34,18 @@ class youtubePlaylist
             $tag            = (array)$tag;
             $this->tags[]   = $tag['@attributes']['term'];
         }
-        $this->last = (array)$xml->link[4];
-        
-        $start = 1;
-        $i = 0;
+
         do {
-            $data = file_get_contents_curl("http://gdata.youtube.com/feeds/api/playlists/{$this->playlistID}?start-index={$start}&max-results=50");
+            $this->last = (array)$xml->link[4];
+            $data = file_get_contents_curl("http://gdata.youtube.com/feeds/api/playlists/{$this->playlistID}?start-index={$this->startIndex}&max-results=50");
             $xml = simplexml_load_string($data);
             foreach($xml->entry as $video)
             {
                 $this->videos->append(new youtubeVideo($video));
                 
             }                   
-        $start+=50;    
-        } while(empty($last) === false  && $this->last['@attributes']['rel'] === 'next');
+        $this->startIndex+=50;
+        } while(empty($this->last) === false  && $this->last['@attributes']['rel'] === 'next');
     }
     public function getXML(){return $this->xml;}
     public function getTime(){return $this->time;}
@@ -62,5 +58,6 @@ class youtubePlaylist
     public function getVideos(){return $this->videos;}
     public function getDescription(){return $this->description;}
     public function getLast(){return $this->last;}
+    public function getStartIndex(){return $this->startIndex;}
 }
 ?>
